@@ -1,0 +1,94 @@
+﻿<!-- WhatsApp Web‑like layout with dark theme (matching first dark aesthetic) and dynamic main panel -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WhatsApp Dark Mock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --green:#25d366; --green-dark:#128c7e;
+      --bg:#0d1418; --surface:#1f2c33; --sidebar:#111b21;
+      --text-primary:#e9edef; --text-secondary:#8696a0; --bubble:#2e3b33;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Roboto',sans-serif;background:var(--bg);height:100vh;display:flex;align-items:center;justify-content:center;color:var(--text-primary)}
+    .wrapper{width:90%;height:90%;background:var(--surface);display:flex;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+    /* sidebar */
+    .sidebar{width:30%;background:var(--sidebar);display:flex;flex-direction:column}
+    .sb-header{background:var(--green-dark);color:#fff;padding:.75rem 1rem;display:flex;align-items:center;gap:1rem}
+    .avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#2a3942}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .menu{margin-left:auto;font-size:1.25rem;cursor:pointer;color:#fff}
+    .search{padding:.7rem 1rem}
+    .search input{width:100%;padding:.5rem 1rem;border:none;border-radius:20px;background:#202c33;font-size:.9rem;color:var(--text-primary)}
+    .search input::placeholder{color:#55666e}
+    .chats{flex:1;overflow-y:auto}
+    .chat{display:flex;align-items:center;gap:.8rem;padding:.65rem 1rem;cursor:pointer;transition:background .2s}
+    .chat:hover{background:#202c33}
+    .chat.active{background:#2a3942}
+    .chat .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;background:#2a3942}
+    .chat .avatar img{width:100%;height:100%;object-fit:cover}
+    .chat-name{font-weight:500;font-size:.95rem;color:var(--text-primary)}
+    .chat-last,.chat-time{font-size:.8rem;color:var(--text-secondary)}
+    /* main */
+    .main{flex:1;background:var(--surface);display:flex;flex-direction:column;position:relative}
+    .placeholder,.conversation{margin:auto;text-align:center}
+    .placeholder img{width:300px;max-width:60%}
+    .title{font-size:1.6rem;margin-top:2rem;color:var(--text-primary)}
+    .subtitle{margin-top:1rem;max-width:70%;color:var(--text-secondary);line-height:1.4}
+    .bottom-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--green)}
+    /* messages */
+    .conversation{width:100%;height:100%;display:none;flex-direction:column;overflow-y:auto;padding:1.5rem 10% 3rem}
+    .msg{max-width:60%;padding:.6rem .9rem;border-radius:8px;margin-bottom:.6rem;font-size:.9rem;line-height:1.3}
+    .sent{background:var(--green);color:#fff;margin-left:auto}
+    .rcvd{background:var(--bubble);color:var(--text-primary)}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-header"><div class="avatar"><img src="https://i.redd.it/vf5mrw6sdjmb1.png" alt="User"/></div><div class="menu">⋮</div></div>
+      <div class="search"><input type="text" placeholder="Search or start new chat"/></div>
+      <div class="chats" id="chatList">
+        <div class="chat" data-chat="alice"><div class="avatar"><img src="https://i.imgur.com/Io3F4gK.jpg" alt="Alice"/></div><div class="chat-info"><div class="chat-name">Alice</div><div class="chat-last">Hey there!</div></div><div class="chat-time">12:45</div></div>
+        <div class="chat" data-chat="bob"><div class="avatar"><img src="https://i.imgur.com/cFh6m7S.jpg" alt="Bob"/></div><div class="chat-info"><div class="chat-name">Bob</div><div class="chat-last">Let's meet tomorrow</div></div><div class="chat-time">Yesterday</div></div>
+        <div class="chat" data-chat="work"><div class="avatar"><img src="https://i.imgur.com/4XbhMcg.jpg" alt="Work"/></div><div class="chat-info"><div class="chat-name">Work Group</div><div class="chat-last">Presentation updated</div></div><div class="chat-time">Mon</div></div>
+      </div>
+    </aside>
+    <!-- MAIN PANEL -->
+    <main class="main">
+      <section class="placeholder" id="placeholder">
+        <img src="https://i.imgur.com/PLx6Z8b.png" alt="Phone"/>
+        <div class="title">Keep your phone connected</div>
+        <div class="subtitle">WhatsApp Web connects to your phone to sync messages. To reduce data usage, connect your phone to Wi‑Fi.</div>
+      </section>
+      <section class="conversation" id="chat-alice">
+        <div class="msg rcvd">Hi! How's it going?</div>
+        <div class="msg sent">All good. You?</div>
+        <div class="msg rcvd">Great! Wanna grab coffee later?</div>
+      </section>
+      <section class="conversation" id="chat-bob">
+        <div class="msg rcvd">Don't forget our meeting.</div>
+        <div class="msg sent">On it, see you tomorrow.</div>
+      </section>
+      <section class="conversation" id="chat-work">
+        <div class="msg rcvd">Slides are updated.</div>
+        <div class="msg sent">Thanks! I'll review.</div>
+      </section>
+      <div class="bottom-bar"></div>
+    </main>
+  </div>
+  <script>
+    const chats=document.querySelectorAll('.chat');
+    const placeholder=document.getElementById('placeholder');
+    const conversations=document.querySelectorAll('.conversation');
+    chats.forEach(c=>{c.addEventListener('click',()=>{
+      chats.forEach(ch=>ch.classList.remove('active'));c.classList.add('active');
+      placeholder.style.display='none';conversations.forEach(conv=>conv.style.display='none');
+      document.getElementById('chat-'+c.dataset.chat).style.display='flex';
+    })});
+  </script>
+</body>
+</html>

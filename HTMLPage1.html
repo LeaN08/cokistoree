@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Acceso especial ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --wa-green: #25d366;
+      --wa-darker: #128c7e;
+      --wa-light: #2e3b33; /* más oscuro para inputs */
+      --wa-bg: #0d1418;    /* fondo chat oscuro */
+      --wa-surface: #1f2c33; /* tarjetas */
+      --wa-text-dark: #e9edef;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: "Roboto", sans-serif;
+      background: var(--wa-bg);
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; color: var(--wa-text-dark);
+    }
+
+    .container {
+      background-color: var(--wa-surface);
+      width: 350px; border-radius: var(--radius);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      overflow: hidden; animation: fadeIn 0.8s ease-out;
+    }
+
+    .header {
+      background: var(--wa-darker);
+      color: #fff; padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .header span { font-weight: 500; font-size: 1.1rem; }
+
+    .content { padding: 2rem 1.5rem; text-align: center; }
+
+    h2 { margin: 0 0 0.5rem; font-size: 1.25rem; }
+
+    input {
+      width: 100%; padding: 0.65rem 0.9rem; margin-top: 1.4rem;
+      border: 2px solid var(--wa-light); border-radius: var(--radius);
+      background: var(--wa-light); color: var(--wa-text-dark);
+      font-size: 1rem; transition: border 0.25s ease;
+    }
+    input:focus { outline: none; border-color: var(--wa-green); }
+
+    .toggle-wrapper { margin-top: 0.8rem; text-align: right; }
+    .toggle-wrapper label { font-size: 0.8rem; color: var(--wa-green); cursor: pointer; }
+
+    button {
+      margin-top: 1.8rem; width: 100%; padding: 0.7rem 0;
+      border: none; border-radius: var(--radius);
+      background: var(--wa-green); color: #fff;
+      font-weight: 500; font-size: 1rem; cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover { background: var(--wa-darker); }
+
+    #error { color: #ff6b6b; margin-top: 1rem; font-size: 0.85rem; }
+    .error-img {
+      display: none; width: 100px; margin-top: 0.8rem; border-radius: var(--radius);
+      animation: shake 0.5s ease-in-out;
+      filter: grayscale(1);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span>Historial del Wasa</span>
+    </div>
+    <div class="content">
+      <h2>Ingresa la Contraseña</h2>
+      <input type="password" id="password" placeholder="El dia de racha actual" />
+      <div class="toggle-wrapper">
+        <label><input type="checkbox" id="showPass" onclick="togglePass()" /> Mostrar contraseña</label>
+      </div>
+      <button onclick="checkPassword()">Entrar</button>
+      <p id="error"></p>
+      <img id="error-img" class="error-img" src="https://1.bp.blogspot.com/-8pdx8-OYvnI/Vshqom3HWII/AAAAAAAAB5o/KUpaXUEucdc/s1600/crying-smiley.png" alt="Error triste" />
+    </div>
+  </div>
+  <script>
+    function togglePass() {
+      const passInput = document.getElementById("password");
+      passInput.type = passInput.type === "password" ? "text" : "password";
+    }
+    function checkPassword() {
+      const password = document.getElementById("password").value.trim();
+      const correctPassword = "200";
+      const redirectURL = "HTMLPage2.html";
+      const errorText = document.getElementById("error");
+      const errorImg = document.getElementById("error-img");
+      errorText.innerText = "";
+      errorImg.style.display = "none";
+      if (password === correctPassword) {
+        window.location.href = redirectURL;
+      } else if (password === "207") {
+        errorText.innerText = "Casi casi... súmale uno ✨";
+        errorImg.style.display = "block";
+      } else {
+        errorText.innerText = "Contraseña incorrecta 😕";
+        errorImg.style.display = "block";
+      }
+    }
+    document.getElementById("password").addEventListener("keyup", (e) => {
+      if (e.key === "Enter") checkPassword();
+    });
+  </script>
+</body>
+</html>
