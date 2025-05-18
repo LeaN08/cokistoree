@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Índice de páginas</title>
+  <title>Página principal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,26 +22,22 @@
     }
     main {
       flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 1rem;
-      max-width: 1200px;
-      margin: 0 auto;
     }
     .card {
+      width: 100%;
+      max-width: 800px;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      transition: transform 0.2s ease;
     }
-    .card:hover {
-      transform: translateY(-4px);
-    }
-    .card iframe {
+    iframe {
       width: 100%;
-      height: 400px;
+      height: 80vh;
       border: none;
     }
     footer {
@@ -54,14 +50,11 @@
 </head>
 <body>
   <header>
-    <h1>Índice de Páginas</h1>
+    <h1>Página Principal</h1>
   </header>
   <main>
     <div class="card">
-      <iframe src="HTMLPage1.html" title="Página 1"></iframe>
-    </div>
-    <div class="card">
-      <iframe src="HTMLPage2.html" title="Página 2"></iframe>
+      <iframe src="HTMLPage1.html" title="HTMLPage1"></iframe>
     </div>
   </main>
   <footer>
