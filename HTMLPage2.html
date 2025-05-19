@@ -1,4 +1,4 @@
-<!-- WhatsApp‑like layout with dark theme and photo upload in 'Fotos' chat -->
+<!-- WhatsApp‑like layout with dark theme and photo upload that persiste en GitHub Pages -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +39,6 @@
     .rcvd{display:none}
     /* input bar for Fotos */
     #fotoInputBar{position:absolute;bottom:0;left:0;right:0;padding:0.8rem 1.5rem;background:#202c33;display:none;align-items:center;gap:1rem}
-    #fotoInputBar input{flex:1;color:#fff}
     #fotoInputBar label{background:var(--green);padding:.4rem .8rem;border-radius:6px;cursor:pointer}
   </style>
 </head>
@@ -64,81 +63,98 @@
       </section>
       <!-- Mensaje -->
       <section class="conversation" id="chat-Mensaje">
-        <div class="msg sent">Hola, quería compartirte unas reflexiones extensas sobre nuestro proyecto. Primero, considero fundamental que definamos claramente los objetivos a corto y largo plazo para alinear esfuerzos del equipo. Además, deberíamos establecer métricas de éxito que sean medibles y realistas. Finalmente, propongo agendar reuniones quincenales para revisar avances y ajustar el rumbo según sea necesario.</div>
+        <div class="msg sent">Hola, quería compartirte unas reflexiones extensas sobre nuestro proyecto...</div>
       </section>
       <!-- Historia -->
       <section class="conversation" id="chat-Historia">
-        <div class="msg sent">Érase una vez un desarrollador que, inspirado por la colaboración y la curiosidad, decidió aprender cada día algo nuevo. Con esfuerzo constante, transformó líneas de código en experiencias que impactaban positivamente la vida de las personas. Esta historia continúa, porque el aprendizaje nunca termina y el deseo de crear tampoco.</div>
+        <div class="msg sent">Érase una vez un desarrollador...</div>
       </section>
       <!-- Fotos -->
       <section class="conversation" id="chat-Fotos">
-        <div class="msg sent">aqui estan las ftos q tenemos osea nd JAJAJAJAJ bno esta nms se pueden subir pal futuro ps</div>
+        <div class="msg sent">En este espacio puedes subir tus fotografías favoritas. Haz clic en el ícono de abajo y selecciona una imagen desde tu dispositivo.</div>
       </section>
       <div class="bottom-bar"></div>
       <!-- Foto input bar -->
       <div id="fotoInputBar">
         <input type="file" id="fotoInput" accept="image/*" hidden />
-        <label for="fotoInput">agrega ps</label>
+        <label for="fotoInput">📷 Subir foto</label>
       </div>
     </main>
   </div>
   <script>
-    const chats=document.querySelectorAll('.chat');
-    const placeholder=document.getElementById('placeholder');
-    const conversations=document.querySelectorAll('.conversation');
-    const fotoBar=document.getElementById('fotoInputBar');
-    const fotoInput=document.getElementById('fotoInput');
+    // === Ajusta aquí tu información ===
+    const REPO = "LeaN08/val.github.io"; // owner/repo
+    const TOKEN = "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";  // fine‑grained PAT con repo dispatch
 
-    // ---- helpers for localStorage persistence ----
-    const LS_KEY='fotosChatImages';
-    function getStoredImages(){
-      try{return JSON.parse(localStorage.getItem(LS_KEY))||[]}catch{ return [];}}
-    function storeImage(dataURL){
-      const imgs=getStoredImages();
-      imgs.push(dataURL);
-      localStorage.setItem(LS_KEY,JSON.stringify(imgs));
-    }
-    function renderStoredImages(){
-      const container=document.getElementById('chat-Fotos');
-      getStoredImages().forEach(src=>{
-        const div=document.createElement('div');div.className='msg sent';
-        const img=document.createElement('img');img.src=src;div.appendChild(img);
-        container.appendChild(div);
-      });
+    // -------------------- UI --------------------
+    const chats = document.querySelectorAll('.chat');
+    const placeholder = document.getElementById('placeholder');
+    const conversations = document.querySelectorAll('.conversation');
+    const fotoBar = document.getElementById('fotoInputBar');
+    const fotoInput = document.getElementById('fotoInput');
+
+    // helper para crear burbuja con imagen
+    function addImageBubble(src, container){
+      const msg = document.createElement('div');
+      msg.className = 'msg sent';
+      const img = document.createElement('img');
+      img.src = src;
+      msg.appendChild(img);
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
     }
 
-    // load stored images on first render
-    renderStoredImages();
+    // ---- Cargar índice permanente desde fotos/index.json ----
+    async function fetchFotosPersistentes(){
+      try{
+        const resp = await fetch('fotos/index.json', {cache:'no-cache'});
+        if(!resp.ok) return;
+        const arr = await resp.json();
+        const cont = document.getElementById('chat-Fotos');
+        arr.forEach(url => addImageBubble(url, cont));
+      }catch(e){ console.warn('No index aún', e); }
+    }
 
-    chats.forEach(c=>c.addEventListener('click',()=>{
-      chats.forEach(ch=>ch.classList.remove('active'));
+    fetchFotosPersistentes();
+
+    // ---- Navegación entre chats ----
+    chats.forEach(c => c.addEventListener('click', () => {
+      chats.forEach(ch => ch.classList.remove('active'));
       c.classList.add('active');
-      placeholder.style.display='none';
-      conversations.forEach(conv=>conv.style.display='none');
-      const target=document.getElementById('chat-'+c.dataset.chat);
-      target.style.display='flex';
-      // show upload bar only on Fotos chat
-      fotoBar.style.display=(c.dataset.chat==='Fotos')?'flex':'none';
+      placeholder.style.display = 'none';
+      conversations.forEach(conv => conv.style.display = 'none');
+      const target = document.getElementById('chat-' + c.dataset.chat);
+      target.style.display = 'flex';
+      fotoBar.style.display = (c.dataset.chat === 'Fotos') ? 'flex' : 'none';
     }));
 
-    // handle image upload
-    fotoInput.addEventListener('change',e=>{
-      const file=e.target.files[0];
+    // ---- Subir foto -> GitHub Action ----
+    fotoInput.addEventListener('change', async e => {
+      const file = e.target.files[0];
       if(!file) return;
-      const reader=new FileReader();
-      reader.onload=ev=>{
-        const imgSrc=ev.target.result;
-        // append to DOM
-        const msg=document.createElement('div');msg.className='msg sent';
-        const img=document.createElement('img');img.src=imgSrc;msg.appendChild(img);
-        const chatFotos=document.getElementById('chat-Fotos');
-        chatFotos.appendChild(msg);
-        chatFotos.scrollTop=chatFotos.scrollHeight;
-        // store in localStorage so it persists next load
-        storeImage(imgSrc);
-      };
-      reader.readAsDataURL(file);
-      e.target.value=''; // allow re‑uploading same file if desired
+
+      // muestra miniatura inmediata
+      const chatFotos = document.getElementById('chat-Fotos');
+      const localURL = URL.createObjectURL(file);
+      addImageBubble(localURL, chatFotos);
+
+      // convierte a base64
+      const b64 = await file.arrayBuffer()
+                            .then(buf => btoa(String.fromCharCode(...new Uint8Array(buf))));
+      // dispara repository_dispatch
+      await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
+        method: 'POST',
+        headers: {
+          'Accept':'application/vnd.github+json',
+          'Authorization': `Bearer ${TOKEN}`
+        },
+        body: JSON.stringify({
+          event_type: 'subir_foto',
+          client_payload: { name: file.name, content: b64 }
+        })
+      });
+
+      e.target.value = '';
     });
   </script>
 </body>
