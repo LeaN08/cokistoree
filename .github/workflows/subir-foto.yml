@@ -1,36 +1,64 @@
-name: Guardar foto del chat
+name: Subir foto y publicar
 
 on:
   repository_dispatch:
     types: [subir_foto]
 
 jobs:
-  saveImage:
+  subir:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      # 1) Checkout la rama gh-pages
+      - name: Checkout gh-pages
         uses: actions/checkout@v4
-
-      - name: Decode & save image
-        run: |
-          echo "${{ github.event.client_payload.content }}" | base64 -d > tmpfile
-          NAME=${{ github.event.client_payload.name }}
-          TS=$(date +%s)
-          mkdir -p fotos
-          FILE="fotos/${TS}-${NAME}"
-          mv tmpfile "$FILE"
-
-      - name: Update index.json
-        run: |
-          INDEX=fotos/index.json
-          URL="https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/${FILE}"
-          if [ -f "$INDEX" ]; then
-            jq ". + [\"$URL\"]" "$INDEX" > idx.tmp && mv idx.tmp "$INDEX"
-          else
-            echo "[\"$URL\"]" > "$INDEX"
-          fi
-      - name: Commit & push
-        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Add chat photo ${{ github.event.client_payload.name }}"
-          branch: gh-pages
+          ref: gh-pages
+
+      # 2) Preparar Node (usaremos un script JS sencillo)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3) Restaurar index.json (si no existe lo creamos)
+      - name: Crear carpeta fotos
+        run: mkdir -p fotos
+
+      # 4) Ejecutar script que escribe la imagen y actualiza el índice
+      - name: Guardar imagen
+        env:
+          FILE_NAME: ${{ github.event.client_payload.name }}
+          FILE_B64:  ${{ github.event.client_payload.content }}
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          const name = process.env.FILE_NAME || 'sin_nombre.png';
+          const b64  = process.env.FILE_B64  || '';
+          const buf  = Buffer.from(b64, 'base64');
+
+          // Guarda la imagen
+          const filePath = path.join('fotos', name);
+          fs.writeFileSync(filePath, buf);
+          console.log('Imagen guardada en', filePath);
+
+          // Actualiza index.json
+          const idxPath = path.join('fotos', 'index.json');
+          let arr = [];
+          if (fs.existsSync(idxPath)) arr = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+          const url = `fotos/${name}`;
+          if (!arr.includes(url)) arr.push(url);
+          fs.writeFileSync(idxPath, JSON.stringify(arr, null, 2));
+          console.log('index.json actualizado');
+          EOF
+
+      # 5) Hacer commit y push
+      - name: Commit & Push
+        run: |
+          git config user.name  "foto‑bot"
+          git config user.email "bot@example.com"
+          git add fotos/
+          git commit -m "feat: nueva foto ${{ github.event.client_payload.name }}" || echo "Sin cambios para commitear"
+          git push origin gh-pages
