@@ -1,0 +1,36 @@
+name: Guardar foto del chat
+
+on:
+  repository_dispatch:
+    types: [subir_foto]
+
+jobs:
+  saveImage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Decode & save image
+        run: |
+          echo "${{ github.event.client_payload.content }}" | base64 -d > tmpfile
+          NAME=${{ github.event.client_payload.name }}
+          TS=$(date +%s)
+          mkdir -p fotos
+          FILE="fotos/${TS}-${NAME}"
+          mv tmpfile "$FILE"
+
+      - name: Update index.json
+        run: |
+          INDEX=fotos/index.json
+          URL="https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/${FILE}"
+          if [ -f "$INDEX" ]; then
+            jq ". + [\"$URL\"]" "$INDEX" > idx.tmp && mv idx.tmp "$INDEX"
+          else
+            echo "[\"$URL\"]" > "$INDEX"
+          fi
+      - name: Commit & push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Add chat photo ${{ github.event.client_payload.name }}"
+          branch: gh-pages
