@@ -1,4 +1,4 @@
-﻿<!-- WhatsApp Web‑like layout with dark theme (matching first dark aesthetic) and dynamic main panel -->
+<!-- WhatsApp‑like layout with dark theme and photo upload in 'Fotos' chat -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,11 +6,7 @@
   <title>VA</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --green:#25d366; --green-dark:#128c7e;
-      --bg:#0d1418; --surface:#1f2c33; --sidebar:#111b21;
-      --text-primary:#e9edef; --text-secondary:#8696a0; --bubble:#2e3b33;
-    }
+    :root{--green:#25d366;--green-dark:#128c7e;--bg:#0d1418;--surface:#1f2c33;--sidebar:#111b21;--text-primary:#e9edef;--text-secondary:#8696a0;--bubble:#2e3b33}
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Roboto',sans-serif;background:var(--bg);height:100vh;display:flex;align-items:center;justify-content:center;color:var(--text-primary)}
     .wrapper{width:90%;height:90%;background:var(--surface);display:flex;box-shadow:0 6px 20px rgba(0,0,0,.5)}
@@ -25,8 +21,7 @@
     .search input::placeholder{color:#55666e}
     .chats{flex:1;overflow-y:auto}
     .chat{display:flex;align-items:center;gap:.8rem;padding:.65rem 1rem;cursor:pointer;transition:background .2s}
-    .chat:hover{background:#202c33}
-    .chat.active{background:#2a3942}
+    .chat:hover{background:#202c33}.chat.active{background:#2a3942}
     .chat .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;background:#2a3942}
     .chat .avatar img{width:100%;height:100%;object-fit:cover}
     .chat-name{font-weight:500;font-size:.95rem;color:var(--text-primary)}
@@ -34,15 +29,18 @@
     /* main */
     .main{flex:1;background:var(--surface);display:flex;flex-direction:column;position:relative}
     .placeholder,.conversation{margin:auto;text-align:center}
-    .placeholder img{width:300px;max-width:60%}
-    .title{font-size:1.6rem;margin-top:2rem;color:var(--text-primary)}
-    .subtitle{margin-top:1rem;max-width:70%;color:var(--text-secondary);line-height:1.4}
+    .placeholder img{width:260px;max-width:55%}
+    .title{font-size:1.5rem;margin-top:1.5rem}.subtitle{margin-top:.8rem;max-width:70%;color:var(--text-secondary)}
     .bottom-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--green)}
     /* messages */
-    .conversation{width:100%;height:100%;display:none;flex-direction:column;overflow-y:auto;padding:1.5rem 10% 3rem}
-    .msg{max-width:60%;padding:.6rem .9rem;border-radius:8px;margin-bottom:.6rem;font-size:.9rem;line-height:1.3}
-    .sent{background:var(--green);color:#fff;margin-left:auto}
-    .rcvd{background:var(--bubble);color:var(--text-primary)}
+    .conversation{width:100%;height:100%;display:none;flex-direction:column;overflow-y:auto;padding:2rem 12% 6rem}
+    .msg{max-width:85%;padding:1rem 1.3rem;border-radius:8px;margin-bottom:1.2rem;font-size:1rem;line-height:1.6;background:var(--green);color:#fff;margin-left:auto;text-align:left;white-space:pre-line}
+    .msg img{max-width:100%;border-radius:6px;display:block}
+    .rcvd{display:none}
+    /* input bar for Fotos */
+    #fotoInputBar{position:absolute;bottom:0;left:0;right:0;padding:0.8rem 1.5rem;background:#202c33;display:none;align-items:center;gap:1rem}
+    #fotoInputBar input{flex:1;color:#fff}
+    #fotoInputBar label{background:var(--green);padding:.4rem .8rem;border-radius:6px;cursor:pointer}
   </style>
 </head>
 <body>
@@ -52,43 +50,96 @@
       <div class="sb-header"><div class="avatar"><img src="https://i.redd.it/vf5mrw6sdjmb1.png" alt="User"/></div><div class="menu">⋮</div></div>
       <div class="search"><input type="text" placeholder="Search or start new chat"/></div>
       <div class="chats" id="chatList">
-        <div class="chat" data-chat="Mensaje pa tu"><div class="avatar"><img src="https://st.depositphotos.com/1001911/4025/v/950/depositphotos_40251909-stock-illustration-writing-emoticon.jpg" alt="Alice"/></div><div class="chat-info"><div class="chat-name">Alice</div><div class="chat-last">Hey there!</div></div><div class="chat-time"></div></div>
-        <div class="chat" data-chat="historia"><div class="avatar"><img src="https://static.mercdn.net/members/138875919.jpg?1613865793" alt="Bob"/></div><div class="chat-info"><div class="chat-name">Bob</div><div class="chat-last">Let's meet tomorrow</div></div><div class="chat-time"></div></div>
-        <div class="chat" data-chat="Fotos"><div class="avatar"><img src="https://thumbs.dreamstime.com/z/emoticon-da-c%C3%A2mera-19731655.jpg?w=400" alt="Work"/></div><div class="chat-info"><div class="chat-name">Work Group</div><div class="chat-last">Presentation updated</div></div><div class="chat-time"></div></div>
+        <div class="chat" data-chat="Mensaje"><div class="avatar"><img src="https://st.depositphotos.com/1001911/4025/v/950/depositphotos_40251909-stock-illustration-writing-emoticon.jpg" alt="Msg"/></div><div class="chat-info"><div class="chat-name">Mensaje pa tu</div><div class="chat-last">Abre para ver</div></div></div>
+        <div class="chat" data-chat="Historia"><div class="avatar"><img src="https://static.mercdn.net/members/138875919.jpg?1613865793" alt="Hist"/></div><div class="chat-info"><div class="chat-name">Historia</div><div class="chat-last">Relato largo</div></div></div>
+        <div class="chat" data-chat="Fotos"><div class="avatar"><img src="https://thumbs.dreamstime.com/z/emoticon-da-c%C3%A2mera-19731655.jpg?w=400" alt="Fotos"/></div><div class="chat-info"><div class="chat-name">Fotos</div><div class="chat-last">Galería</div></div></div>
       </div>
     </aside>
     <!-- MAIN PANEL -->
     <main class="main">
       <section class="placeholder" id="placeholder">
-        <img src="https://media.tenor.com/4yEuW6bbRo0AAAAi/gato.gif" alt="Phone"/>
-        <div class="title">holaaaaaa</div>
-        <div class="subtitle">puedes abrir cada uno de los chats</div>
+        <img src="https://media.tenor.com/4yEuW6bbRo0AAAAi/gato.gif" alt="Cat"/>
+        <div class="title">¡Hola!</div>
+        <div class="subtitle">Selecciona un chat para leer o subir contenido.</div>
       </section>
-      <section class="conversation" id="chat-alice">
-        <div class="msg rcvd">Hi! How's it going?</div>
-        <div class="msg sent">All good. You?</div>
-        <div class="msg rcvd">Great! Wanna grab coffee later?</div>
+      <!-- Mensaje -->
+      <section class="conversation" id="chat-Mensaje">
+        <div class="msg sent">Hola, quería compartirte unas reflexiones extensas sobre nuestro proyecto. Primero, considero fundamental que definamos claramente los objetivos a corto y largo plazo para alinear esfuerzos del equipo. Además, deberíamos establecer métricas de éxito que sean medibles y realistas. Finalmente, propongo agendar reuniones quincenales para revisar avances y ajustar el rumbo según sea necesario.</div>
       </section>
-      <section class="conversation" id="chat-bob">
-        <div class="msg rcvd">Don't forget our meeting.</div>
-        <div class="msg sent">On it, see you tomorrow.</div>
+      <!-- Historia -->
+      <section class="conversation" id="chat-Historia">
+        <div class="msg sent">Érase una vez un desarrollador que, inspirado por la colaboración y la curiosidad, decidió aprender cada día algo nuevo. Con esfuerzo constante, transformó líneas de código en experiencias que impactaban positivamente la vida de las personas. Esta historia continúa, porque el aprendizaje nunca termina y el deseo de crear tampoco.</div>
       </section>
-      <section class="conversation" id="chat-work">
-        <div class="msg rcvd">Slides are updated.</div>
-        <div class="msg sent">Thanks! I'll review.</div>
+      <!-- Fotos -->
+      <section class="conversation" id="chat-Fotos">
+        <div class="msg sent">En este espacio puedes subir tus fotografías favoritas. Haz clic en el ícono de abajo y selecciona una imagen desde tu dispositivo.</div>
       </section>
       <div class="bottom-bar"></div>
+      <!-- Foto input bar -->
+      <div id="fotoInputBar">
+        <input type="file" id="fotoInput" accept="image/*" hidden />
+        <label for="fotoInput">📷 Subir foto</label>
+      </div>
     </main>
   </div>
   <script>
     const chats=document.querySelectorAll('.chat');
     const placeholder=document.getElementById('placeholder');
     const conversations=document.querySelectorAll('.conversation');
-    chats.forEach(c=>{c.addEventListener('click',()=>{
-      chats.forEach(ch=>ch.classList.remove('active'));c.classList.add('active');
-      placeholder.style.display='none';conversations.forEach(conv=>conv.style.display='none');
-      document.getElementById('chat-'+c.dataset.chat).style.display='flex';
-    })});
+    const fotoBar=document.getElementById('fotoInputBar');
+    const fotoInput=document.getElementById('fotoInput');
+
+    // ---- helpers for localStorage persistence ----
+    const LS_KEY='fotosChatImages';
+    function getStoredImages(){
+      try{return JSON.parse(localStorage.getItem(LS_KEY))||[]}catch{ return [];}}
+    function storeImage(dataURL){
+      const imgs=getStoredImages();
+      imgs.push(dataURL);
+      localStorage.setItem(LS_KEY,JSON.stringify(imgs));
+    }
+    function renderStoredImages(){
+      const container=document.getElementById('chat-Fotos');
+      getStoredImages().forEach(src=>{
+        const div=document.createElement('div');div.className='msg sent';
+        const img=document.createElement('img');img.src=src;div.appendChild(img);
+        container.appendChild(div);
+      });
+    }
+
+    // load stored images on first render
+    renderStoredImages();
+
+    chats.forEach(c=>c.addEventListener('click',()=>{
+      chats.forEach(ch=>ch.classList.remove('active'));
+      c.classList.add('active');
+      placeholder.style.display='none';
+      conversations.forEach(conv=>conv.style.display='none');
+      const target=document.getElementById('chat-'+c.dataset.chat);
+      target.style.display='flex';
+      // show upload bar only on Fotos chat
+      fotoBar.style.display=(c.dataset.chat==='Fotos')?'flex':'none';
+    }));
+
+    // handle image upload
+    fotoInput.addEventListener('change',e=>{
+      const file=e.target.files[0];
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=ev=>{
+        const imgSrc=ev.target.result;
+        // append to DOM
+        const msg=document.createElement('div');msg.className='msg sent';
+        const img=document.createElement('img');img.src=imgSrc;msg.appendChild(img);
+        const chatFotos=document.getElementById('chat-Fotos');
+        chatFotos.appendChild(msg);
+        chatFotos.scrollTop=chatFotos.scrollHeight;
+        // store in localStorage so it persists next load
+        storeImage(imgSrc);
+      };
+      reader.readAsDataURL(file);
+      e.target.value=''; // allow re‑uploading same file if desired
+    });
   </script>
 </body>
 </html>
