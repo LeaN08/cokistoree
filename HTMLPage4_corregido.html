@@ -1,0 +1,430 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VA Simplificado</title>
+  <style>
+    /* Variables de color para facilitar cambios */
+    :root {
+      --green: #25d366;
+      --green-dark: #128c7e;
+      --bg: #0d1418;
+      --surface: #1f2c33;
+      --sidebar: #111b21;
+      --text-primary: #e9edef;
+      --text-secondary: #8696a0;
+      --bubble: #2e3b33;
+    }
+    /* Reset básico y estilos generales */
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .wrapper {
+      width: 90%; height: 90%;
+      background: var(--surface);
+      display: flex;
+      box-shadow: 0 6px 20px rgba(0,0,0,.5);
+    }
+    /* Sidebar: lista de chats */
+    .sidebar {
+      width: 30%;
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+    }
+    .sb-header {
+      background: var(--green-dark);
+      color: white;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #2a3942;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .menu {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: white;
+    }
+    .search input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: none;
+      background: #202c33;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+    .search input::placeholder {
+      color: #55666e;
+    }
+    .chats {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .chat {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .chat:hover {
+      background: #202c33;
+    }
+    .chat.active {
+      background: #2a3942;
+    }
+    .chat .avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: #2a3942;
+    }
+    .chat-name {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+    .chat-last {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Main area donde se muestra el chat */
+    .main {
+      flex: 1;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .placeholder, .conversation {
+      margin: auto;
+      text-align: center;
+    }
+    .placeholder img {
+      width: 260px;
+      max-width: 55%;
+    }
+    .title {
+      font-size: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .subtitle {
+      margin-top: 0.8rem;
+      max-width: 70%;
+      color: var(--text-secondary);
+    }
+    .conversation {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 2rem 12% 6rem;
+    }
+    .msg {
+      max-width: 85%;
+      padding: 1rem 1.3rem;
+      border-radius: 8px;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      background: var(--green);
+      color: white;
+      margin-left: auto;
+      text-align: left;
+      white-space: pre-line;
+    }
+    .msg.rcvd {
+      margin-left: 0;
+      margin-right: auto;
+      background: var(--bubble);
+    }
+    .msg img {
+      max-width: 100%;
+      border-radius: 6px;
+      display: block;
+    }
+    /* Barra para subir fotos */
+    #fotoInputBar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0.8rem 1.5rem;
+      background: #202c33;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+    }
+    #fotoInputBar input {
+      flex: 1;
+      color: white;
+    }
+    #fotoInputBar label {
+      background: var(--green);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    /* Botones para historia */
+    #historiaBtns {
+      position: absolute;
+      bottom: 0;
+      left: 30%;
+      right: 0;
+      padding: 1rem;
+      background: var(--sidebar);
+      display: none;
+      justify-content: space-evenly;
+      z-index: 2;
+    }
+    #historiaBtns button {
+      background-color: var(--green);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    #historiaBtns button:hover {
+      background-color: var(--green-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <aside class="sidebar">
+      <div class="sb-header">
+        <div class="avatar">
+          <img src="https://i.redd.it/vf5mrw6sdjmb1.png" alt="User" />
+        </div>
+        <div class="menu">⋮</div>
+      </div>
+      <div class="search">
+        <input type="text" placeholder="Buscar o iniciar chat" />
+      </div>
+      <div class="chats" id="chatList">
+        <div class="chat" data-chat="Mensaje">
+          <div class="avatar">
+            <img src="https://st.depositphotos.com/1001911/4025/v/950/depositphotos_40251909-stock-illustration-writing-emoticon.jpg" alt="Msg" />
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">Mensaje pa tu</div>
+            <div class="chat-last">Abre para ver</div>
+          </div>
+        </div>
+        <div class="chat" data-chat="Historia">
+          <div class="avatar">
+            <img src="https://static.mercdn.net/members/138875919.jpg?1613865793" alt="Hist" />
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">Historia</div>
+            <div class="chat-last">Relato largo</div>
+          </div>
+        </div>
+        <div class="chat" data-chat="Fotos">
+          <div class="avatar">
+            <img src="https://thumbs.dreamstime.com/z/emoticon-da-c%C3%A2mera-19731655.jpg?w=400" alt="Fotos" />
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">Fotos</div>
+            <div class="chat-last">Galería</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="placeholder" id="placeholder">
+        <img src="https://media.tenor.com/4yEuW6bbRo0AAAAi/gato.gif" alt="Cat" />
+        <div class="title">¡Hola!</div>
+        <div class="subtitle">Selecciona un chat para leer o subir contenido.</div>
+      </section>
+
+      <section class="conversation" id="chat-Mensaje">
+        <div class="msg rcvd">Este es un mensaje de prueba.</div>
+      </section>
+
+      <section class="conversation" id="chat-Historia">
+        <div class="msg rcvd">por donde quieres empezar aver</div>
+      </section>
+
+      <section class="conversation" id="chat-Fotos">
+        <!-- Fotos cargadas aparecerán aquí -->
+      </section>
+
+      <div id="fotoInputBar">
+        <input type="file" id="fotoInput" accept="image/*" hidden />
+        <label for="fotoInput">Agregar foto</label>
+      </div>
+
+      <div id="historiaBtns">
+        <button onclick="responder(1)">¿como nos empezamos a hablar?</button>
+        <button onclick="responder(2)">Opción 2</button>
+        <button onclick="responder(3)">Opción 3</button>
+        <button onclick="responder(4)">Opción 4</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Referencias a elementos
+    const chats = document.querySelectorAll('.chat');
+    const placeholder = document.getElementById('placeholder');
+    const conversations = document.querySelectorAll('.conversation');
+    const fotoBar = document.getElementById('fotoInputBar');
+    const fotoInput = document.getElementById('fotoInput');
+    const historiaBtns = document.getElementById('historiaBtns');
+    const LS_KEY = 'fotosChatImages';
+
+    // Función para obtener imágenes guardadas en localStorage
+    function getStoredImages() {
+      try {
+        return JSON.parse(localStorage.getItem(LS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    // Guarda una imagen en localStorage
+    function storeImage(dataURL) {
+      const imgs = getStoredImages();
+      imgs.push(dataURL);
+      localStorage.setItem(LS_KEY, JSON.stringify(imgs));
+    }
+
+    // Muestra las imágenes guardadas en el chat de Fotos
+    function renderStoredImages() {
+      const container = document.getElementById('chat-Fotos');
+      getStoredImages().forEach(src => {
+        const div = document.createElement('div');
+        div.className = 'msg sent';
+        const img = document.createElement('img');
+        img.src = src;
+        div.appendChild(img);
+        container.appendChild(div);
+      });
+    }
+    renderStoredImages();
+
+    // Cambio de chat al hacer clic
+    chats.forEach(c => {
+      c.addEventListener('click', () => {
+        chats.forEach(ch => ch.classList.remove('active'));
+        c.classList.add('active');
+        placeholder.style.display = 'none';
+
+        conversations.forEach(conv => (conv.style.display = 'none'));
+        const target = document.getElementById('chat-' + c.dataset.chat);
+        if (target) target.style.display = 'flex';
+
+        // Mostrar barra para subir foto solo si estamos en "Fotos"
+        fotoBar.style.display = c.dataset.chat === 'Fotos' ? 'flex' : 'none';
+        // Mostrar botones para "Historia" solo si estamos en ese chat
+        historiaBtns.style.display = c.dataset.chat === 'Historia' ? 'flex' : 'none';
+      });
+    });
+
+    // Subir foto y mostrarla en chat de Fotos
+    fotoInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const imgSrc = ev.target.result;
+        const msg = document.createElement('div');
+        msg.className = 'msg sent';
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        msg.appendChild(img);
+        const chatFotos = document.getElementById('chat-Fotos');
+        chatFotos.appendChild(msg);
+        chatFotos.scrollTop = chatFotos.scrollHeight;
+        storeImage(imgSrc);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = ''; // limpia el input para poder subir la misma foto otra vez
+    });
+
+    // Función para responder a opciones de la historia
+    function responder(opcion) {
+  const chat = document.getElementById('chat-Historia');
+
+  // Definir mensajes personalizados para cada opción
+  const mensajesEnviados = {
+    1: "¿como empezamos a hablar",
+    2: "Has escogido la opción 2: Continuamos con el camino intermedio.",
+    3: "Opción 3 elegida: ¡Vamos por más!",
+    4: "Última opción seleccionada: ¡Finalizamos con fuerza!"
+  };
+
+  const respuestasRecibidas = {
+    1: `kdjsakdjkasd todo empecia cuando los dos coincidimos ne la 
+    academia al principio ni uno de los dos nos hablabamos nada ndita
+    por mi lado pq tenia miedo JAJAJAJAJAJAJJA ya q pocas han sido
+    las veces q yo eh empezado una conversacion con una persona en
+    general y ps me costo y por tu lado nose uash aunque dudo q tu
+    me hubieras hablado primero nse bueno "x" pero bueno igual yo
+    tenia una tremendas ganas de hablarte ps asi q un dia en el
+    carro bueno combi te vi me viste y sonreiste nse pq ni como
+    pero agarre el valor para poder ir sentarme contigo y hablar yo
+    ese dia estuve muy nervioso nose como tu me hayas notado pero
+    fua terrible nervioso yo, te dije como te llamabas pq me habia
+    olvidado tu nombre q por cierto aunque tu digas q no lo sabia pq
+    nunca me lo dijiste si lo sabia lo prometo nose como pero si lo
+    sabia eh, bueno, bueno una conversacion ps un poco muerta la vrd
+    AJAJJAJAJAJAJAJAJ pq sk no yo no sabia de q hablar y tu.... y tu
+    ps valentina tmpco nse ya wno gracias a ese dia los dos formamos
+    nuestro primer vinculo nrml ps simple conocidos aun, tu en ese
+    momento te me hacias una persona interesante por decirlo asi y ps
+    me di cuenta q con el pasar de los dias no me confundi en vrd
+    contigo era todo diferente a los pcos dias senti una tranquilidad
+    y felicidad al estar contigo fue increible unos pcos dias despues
+    empece a pensar si sk me gustabas pq es demasiado raro el q
+    intente estar a cada rato con una persona`,
+    2: "Respuesta para la opción 2: Has elegido la aventura intermedia.",
+    3: "Respuesta para la opción 3: ¡Opción tres activada, sigue explorando!",
+    4: "Respuesta para la opción 4: ¡Última opción, buena elección!"
+  };
+
+  // Crear mensaje enviado con texto personalizado
+  const msg = document.createElement('div');
+  msg.className = 'msg sent';
+  msg.textContent = mensajesEnviados[opcion] || "Opción no válida.";
+  chat.appendChild(msg);
+
+  // Crear mensaje recibido con texto personalizado
+  const rcvd = document.createElement('div');
+  rcvd.className = 'msg rcvd';
+  rcvd.textContent = respuestasRecibidas[opcion] || "Respuesta no disponible.";
+  chat.appendChild(rcvd);
+
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
