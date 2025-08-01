@@ -1,127 +1,104 @@
-<!DOCTYPE html>
+CTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>V</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda Online</title>
   <style>
-    :root {
-      --wa-green: #25d366;
-      --wa-darker: #128c7e;
-      --wa-light: #2e3b33; /* más oscuro para inputs */
-      --wa-bg: #0d1418;    /* fondo chat oscuro */
-      --wa-surface: #1f2c33; /* tarjetas */
-      --wa-text-dark: #e9edef;
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; }
     body {
-      margin: 0; padding: 0;
-      font-family: "Roboto", sans-serif;
-      background: var(--wa-bg);
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; color: var(--wa-text-dark);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
     }
-
+    header {
+      background: #222;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
     .container {
-      background-color: var(--wa-surface);
-      width: 350px; border-radius: var(--radius);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-      overflow: hidden; animation: fadeIn 0.8s ease-out;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
-
-    .header {
-      background: var(--wa-darker);
-      color: #fff; padding: 1rem 1.2rem;
-      display: flex; align-items: center; gap: 0.6rem;
+    .producto {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
     }
-    .header span { font-weight: 500; font-size: 1.1rem; }
-
-    .content { padding: 2rem 1.5rem; text-align: center; }
-
-    h2 { margin: 0 0 0.5rem; font-size: 1.25rem; }
-
-    input {
-      width: 100%; padding: 0.65rem 0.9rem; margin-top: 1.4rem;
-      border: 2px solid var(--wa-light); border-radius: var(--radius);
-      background: var(--wa-light); color: var(--wa-text-dark);
-      font-size: 1rem; transition: border 0.25s ease;
+    .producto img {
+      max-width: 100%;
+      border-radius: 8px;
     }
-    input:focus { outline: none; border-color: var(--wa-green); }
-
-    .toggle-wrapper { margin-top: 0.8rem; text-align: right; }
-    .toggle-wrapper label { font-size: 0.8rem; color: var(--wa-green); cursor: pointer; }
-
-    button {
-      margin-top: 1.8rem; width: 100%; padding: 0.7rem 0;
-      border: none; border-radius: var(--radius);
-      background: var(--wa-green); color: #fff;
-      font-weight: 500; font-size: 1rem; cursor: pointer;
-      transition: background 0.3s ease;
+    .producto h3 {
+      font-size: 18px;
+      margin: 10px 0;
     }
-    button:hover { background: var(--wa-darker); }
-
-    #error { color: #ff6b6b; margin-top: 1rem; font-size: 0.85rem; }
-    .error-img {
-      display: none; width: 100px; margin-top: 0.8rem; border-radius: var(--radius);
-      animation: shake 0.5s ease-in-out;
-      filter: grayscale(1);
+    .precio {
+      color: green;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
+    .btn {
+      background: #007BFF;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .btn:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
+
+  <header>
+    <h1>Tienda Online</h1>
+    <p>¡Bienvenido! Explora nuestros productos</p>
+  </header>
+
   <div class="container">
-    <div class="header">
-      <span>Historial del Wasa</span>
+    
+    <!-- Producto 1 -->
+    <div class="producto">
+      <img src="https://i.ebayimg.com/thumbs/images/g/SsUAAOSw-Xln8kx4/s-l500.jpg" alt="Jordan Saty Loyal 3">
+      <h3>Jordan Saty Loyal 3 Talla 9.5</h3>
+      <p class="precio">S/436</p>
+      <a href="https://wa.me/920592648?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
     </div>
-    <div class="content">
-      <h2>Ingresa la Contraseña</h2>
-      <input type="password" id="password" placeholder="El dia de racha actual" />
-      <div class="toggle-wrapper">
-        <label><input type="checkbox" id="showPass" onclick="togglePass()" /> Mostrar contraseña</label>
-      </div>
-      <button onclick="checkPassword()">Entrar</button>
-      <p id="error"></p>
-      <img id="error-img" class="error-img" src="https://1.bp.blogspot.com/-8pdx8-OYvnI/Vshqom3HWII/AAAAAAAAB5o/KUpaXUEucdc/s1600/crying-smiley.png" alt="Error triste" />
+
+    <!-- Producto 2 -->
+    <div class="producto">
+      <img src="https://tse3.mm.bing.net/th/id/OIP.LcPKAWz_t_2pMWpkCYYluQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Producto 2">
+      <h3>Swif Run 22 w Talla 10</h3>
+      <p class="precio">S/236</p>
+      <a href="https://wa.me/920592648?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
     </div>
+
+    <!-- Producto 3 -->
+    <div class="producto">
+      <img src="https://media.falabella.com/falabellaPE/136566299_01/w=1500,h=1500,fit=pad" alt="runfalcon 5">
+      <h3>Runfalcon 5 Talla 6</h3>
+      <p class="precio">S/ 279</p>
+      <a href="https://wa.me/920592648?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
+    </div>
+
+    <!-- Agrega más productos copiando desde aquí -->
+    <!-- 
+    <div class="producto">
+      <img src="URL_IMAGEN" alt="Nombre del producto">
+      <h3>Nombre del producto</h3>
+      <p class="precio">S/ Precio</p>
+      <button class="btn">Agregar al carrito</button>
+    </div>
+    -->
+
   </div>
-  <script>
-    function togglePass() {
-      const passInput = document.getElementById("password");
-      passInput.type = passInput.type === "password" ? "text" : "password";
-    }
-    function checkPassword() {
-      const password = document.getElementById("password").value.trim();
-      const correctPassword = "200";
-      const redirectURL = "HTMLPage4_corregido.html";
-      const errorText = document.getElementById("error");
-      const errorImg = document.getElementById("error-img");
-      errorText.innerText = "";
-      errorImg.style.display = "none";
-      if (password === correctPassword) {
-        window.location.href = redirectURL;
-      } else if (password === "199") {
-        errorText.innerText = "a okk";
-        errorImg.style.display = "block";
-      } else {
-        errorText.innerText = "aya ta bien p";
-        errorImg.style.display = "block";
-      }
-    }
-    document.getElementById("password").addEventListener("keyup", (e) => {
-      if (e.key === "Enter") checkPassword();
-    });
-  </script>
+
 </body>
 </html>
