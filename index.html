@@ -1,103 +1,354 @@
-<html lang="es">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OSCU</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f9f9f9;
-    }
-    header {
-      background: #222;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .producto {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .producto img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-    .producto h3 {
-      font-size: 18px;
-      margin: 10px 0;
-    }
-    .precio {
-      color: green;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .btn {
-      background: #007BFF;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background: #0056b3;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Lunita</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:black;
+font-family:'Special Elite',monospace;
+color:white;
+text-align:center;
+overflow:hidden;
+}
+
+/* NEBULOSA */
+
+.nebula{
+position:fixed;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at 30% 40%, rgba(120,0,255,0.15), transparent 40%),
+radial-gradient(circle at 70% 60%, rgba(0,120,255,0.15), transparent 40%);
+z-index:-1;
+}
+
+/* ESTRELLAS */
+
+.stars,.stars2,.stars3{
+position:fixed;
+width:100%;
+height:100%;
+}
+
+.stars:after{
+content:"";
+position:absolute;
+width:1px;
+height:1px;
+background:white;
+box-shadow:
+40px 60px white,120px 200px white,300px 100px white,
+500px 400px white,700px 50px white,900px 300px white,
+1100px 200px white,1300px 500px white,150px 600px white,
+400px 700px white,800px 650px white,1000px 750px white;
+animation:animStar 90s linear infinite,twinkle 2s infinite alternate;
+}
+
+.stars2:after{
+content:"";
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+box-shadow:
+100px 100px white,300px 200px white,500px 300px white,
+700px 150px white,900px 400px white,1100px 250px white;
+animation:animStar 140s linear infinite,twinkle 3s infinite alternate;
+}
+
+.stars3:after{
+content:"";
+position:absolute;
+width:3px;
+height:3px;
+background:white;
+box-shadow:
+200px 300px white,600px 200px white,1000px 500px white;
+animation:animStar 180s linear infinite,twinkle 4s infinite alternate;
+}
+
+@keyframes animStar{
+from{transform:translateY(0);}
+to{transform:translateY(-2000px);}
+}
+
+@keyframes twinkle{
+from{opacity:0.5;}
+to{opacity:1;}
+}
+
+/* ESTRELLAS FUGACES */
+
+.shooting-star{
+position:absolute;
+width:2px;
+height:80px;
+background:linear-gradient(white,transparent);
+opacity:0;
+transform:rotate(45deg);
+animation:shoot 6s linear infinite;
+}
+
+.shooting-star:nth-child(2){
+animation-delay:3s;
+left:40%;
+}
+
+.shooting-star:nth-child(3){
+animation-delay:5s;
+left:70%;
+}
+
+@keyframes shoot{
+
+0%{
+transform:translate(-200px,-200px) rotate(45deg);
+opacity:0;
+}
+
+10%{opacity:1;}
+
+30%{
+transform:translate(800px,800px) rotate(45deg);
+opacity:0;
+}
+
+100%{opacity:0;}
+
+}
+
+/* LUNA */
+
+#luna{
+
+position:absolute;
+width:220px;
+height:220px;
+border-radius:50%;
+z-index:0;
+
+/* textura de cráteres */
+
+background:
+radial-gradient(circle at 30% 30%, #bbb 2%, transparent 4%),
+radial-gradient(circle at 60% 40%, #aaa 3%, transparent 6%),
+radial-gradient(circle at 50% 70%, #bbb 2%, transparent 5%),
+radial-gradient(circle at 70% 70%, #aaa 3%, transparent 6%),
+radial-gradient(circle at 40% 60%, #bbb 2%, transparent 4%),
+#ddd;
+
+box-shadow:0 0 40px rgba(255,255,255,0.6);
+
+transition:all 1s ease;
+
+}
+
+/* TEXTO */
+
+#frase{
+
+font-size:32px;
+max-width:80%;
+z-index:2;
+
+}
+
+#frase::after{
+
+content:"|";
+margin-left:5px;
+animation:cursor 1s infinite;
+
+}
+
+@keyframes cursor{
+
+0%{opacity:1;}
+50%{opacity:0;}
+100%{opacity:1;}
+
+}
+
+/* LATIDO DE LUNA */
+
+@keyframes moonPulse{
+
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+
+}
+
+</style>
 </head>
-<body>
 
-  <header>
-    <h1>OSCU</h1>
-    <p>Bienvenido Explora nuestros productos</p>
-  </header>
+<body onclick="cambiarFrase()">
 
-  <div class="container">
-    
-    <!-- Producto 1 -->
-    <div class="producto">
-      <img src="https://i.ebayimg.com/thumbs/images/g/SsUAAOSw-Xln8kx4/s-l500.jpg" alt="Jordan Saty Loyal 3">
-      <h3>Jordan Saty Loyal 3 Talla 9.5</h3>
-      <p class="precio">S/436</p>
-      <a href="https://wa.me/51920592658?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
-    </div>
+<div class="nebula"></div>
 
-    <!-- Producto 2 -->
-    <div class="producto">
-      <img src="https://tse3.mm.bing.net/th/id/OIP.LcPKAWz_t_2pMWpkCYYluQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Producto 2">
-      <h3>Swif Run 22 w Talla 10</h3>
-      <p class="precio">S/236</p>
-      <a href="https://wa.me/51920592658?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
-    </div>
+<div class="stars"></div>
+<div class="stars2"></div>
+<div class="stars3"></div>
 
-    <!-- Producto 3 -->
-    <div class="producto">
-      <img src="https://media.falabella.com/falabellaPE/136566299_01/w=1500,h=1500,fit=pad" alt="runfalcon 5">
-      <h3>Runfalcon 5 Talla 6</h3>
-      <p class="precio">S/ 279</p>
-      <a href="https://wa.me/51920592658?text=Hola,%20quiero%20comprar%20el%20Producto%201" target="_blank" class="btn">COMPRA AL WSP</a>
-    </div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
 
-    <!-- Agrega más productos copiando desde aquí -->
-    <!-- 
-    <div class="producto">
-      <img src="URL_IMAGEN" alt="Nombre del producto">
-      <h3>Nombre del producto</h3>
-      <p class="precio">S/ Precio</p>
-      <button class="btn">Agregar al carrito</button>
-    </div>
-    -->
+<div id="luna"></div>
 
-  </div>
+<div id="frase">toca la pantalla</div>
+
+<!-- sonidos -->
+
+<audio id="tecla" preload="auto">
+<source src="tecla.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="ding" preload="auto">
+<source src="ding.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+let frases = [
+
+"toca la pantalla",
+"sabes porque digo tanto que te amo?",
+"por que te considero mi luna",
+"por que mi luna?",
+"facil",
+"es porque la luna siempre esta ahi...",
+"aunque no siempre la veamos siempre esta ahi",
+"es como mi amor hacia ti aunque quizas haya veces donde sea silencioso, siempre esta ahi",
+"hay veces donde la luna es llena y brilla con toda su intensidad",
+"es como cuando estamos juntos todo parece estar mejor",
+"pero bueno",
+"hay otras veces donde la luna se esconde...",
+"se que como pareja tenemos dias dificiles por equis motivos",
+"pero como ya te dije antes mi amor, la luna siempre esta ahi pase lo que pase.",
+"la luna siempre ilumina las noches oscuras...",
+"es como tu valentina",
+"con algo tan simple como escucharte hablar o escucharte contandome cosas que te parecieron graciosas me llenas de felicidad",
+"eres la luz de mis dias",
+"por todo esto y miles cosas mas...",
+"te digo que TE AMO",
+"porque es un sentimiento que siempre estara ahi dia y noche...",
+"como la luna en el cielo",
+"te amo lunita"
+
+];
+
+let indice = 0;
+let escribiendo = false;
+
+function actualizarLuna(){
+
+let luna = document.getElementById("luna");
+
+let progreso = indice/(frases.length-1);
+
+let brillo = 40 + progreso*80;
+
+luna.style.boxShadow =
+"0 0 "+brillo+"px rgba(255,255,255,"+(0.4+progreso*0.6)+")";
+
+let fase = progreso*100;
+
+luna.style.background =
+`radial-gradient(circle at ${100-fase/2}% 50%, 
+#ddd ${fase}%, 
+black ${fase+5}%)`;
+
+}
+
+function escribir(texto){
+
+if(escribiendo) return;
+
+escribiendo=true;
+
+let elemento=document.getElementById("frase");
+let audio=document.getElementById("tecla");
+let ding=document.getElementById("ding");
+
+elemento.innerHTML="";
+
+let i=0;
+
+function maquina(){
+
+if(i<texto.length){
+
+elemento.innerHTML+=texto.charAt(i);
+
+/* sonido de tecla */
+
+let sonido = audio.cloneNode();
+sonido.play().catch(()=>{});
+
+i++;
+
+setTimeout(maquina,30 + Math.random()*40);
+
+}else{
+
+escribiendo=false;
+
+/* sonido final */
+
+ding.play().catch(()=>{});
+
+if(texto.includes("TE AMO")){
+
+let luna=document.getElementById("luna");
+
+luna.style.animation="moonPulse 2s infinite";
+luna.style.boxShadow="0 0 160px white";
+
+/* vibracion telefono */
+
+if(navigator.vibrate){
+navigator.vibrate([200,100,200]);
+}
+
+}
+
+}
+
+}
+
+maquina();
+
+}
+
+function cambiarFrase(){
+
+if(escribiendo) return;
+
+indice++;
+
+if(indice>=frases.length){
+indice=0;
+}
+
+actualizarLuna();
+
+escribir(frases[indice]);
+
+}
+
+</script>
 
 </body>
 </html>
